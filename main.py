@@ -7,9 +7,10 @@ from modules import Module
 
 if __name__ == "__main__":
     fr = 30
+    k = 100
 
     runtime = 15
-    dt = 1/(fr * 100)
+    dt = 1/(fr * k)
     env = simpy.Environment(0)
     system = Module(
         env=env,
@@ -38,15 +39,23 @@ if __name__ == "__main__":
     ax.set_ylim([np.min(pos_y) * 1.2, np.max(pos_y) * 1.2])
     line, =ax.plot([], [], 'o-', lw=2)
     
+    _ = []
+    for i in range(len(pos)):
+        if i % k == 0:
+            _.append(pos[i])
+    pos = _
+    
     def anim_init():
         line.set_data([], [])
         return line,
 
     def anim_update(frame):
-        line.set_data(system.center, pos[frame])
+        start=system.center
+        end = pos[frame]
+        line.set_data([start[0], end[0]], [start[1], end[1]])
         return line,
     
-    ani = FuncAnimation(fig, anim_update, frames=len(t), init_func=anim_init, blit=True, interval=1000/fr)
+    ani = FuncAnimation(fig, anim_update, frames=len(pos), init_func=anim_init, blit=True, interval=1000/fr)
     
     plt.show()
     ani.save('simulation.mp4', writer='ffmpeg', fps=fr)

@@ -3,7 +3,7 @@ import simpy
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from modules import Pendulum
+from simu import Pendulum
 
 if __name__ == "__main__":
     fr = 30

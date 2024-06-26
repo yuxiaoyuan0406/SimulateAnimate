@@ -3,7 +3,7 @@ import simpy
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from modules import Module
+from modules import Pendulum
 
 if __name__ == "__main__":
     fr = 30
@@ -12,16 +12,14 @@ if __name__ == "__main__":
     runtime = 15
     dt = 1/(fr * k)
     env = simpy.Environment(0)
-    system = Module(
-        env=env,
-        mass=1,
-        length=1,
-        center=np.array([0,0], dtype=np.float64),
-        init_angle=0,
-        init_velo=0,
-        runtime=runtime,
-        dt=dt
-    )
+    system = Pendulum(env=env,
+                      mass=1,
+                      length=1,
+                      center=np.array([0, 0], dtype=np.float64),
+                      init_angle=0,
+                      init_speed=0,
+                      runtime=runtime,
+                      dt=dt)
 
     with tqdm(total=int(runtime/dt), desc='Running simulation') as pbar:
         while env.now < runtime:

@@ -183,8 +183,8 @@ class Signal:
 
         ax_power.plot(
             self.f,
-            20 * np.log10(np.abs(self.X) + epsilon),
-            # np.abs(self.X),
+            # 20 * np.log10(np.abs(self.X) + epsilon),
+            np.abs(self.X),
             color=self.color,
             label=self.label)
         ax_phase.plot(self.f,
@@ -199,6 +199,12 @@ class Signal:
             plt.show(block=block)
 
         return ax_power, ax_phase
+    
+    def dominant_freq(self):
+        positive_frequencies = self.f[self.f>0]
+        magnitudes = np.abs(self.X)[self.f>0]
+        
+        return positive_frequencies[np.argmax(magnitudes)]
 
 
 class Filter:

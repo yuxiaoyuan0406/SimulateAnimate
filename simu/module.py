@@ -72,7 +72,7 @@ class Pendulum:
         theta, omega = current_state + k * self.dt
         self.angular_state = np.array([theta, omega])
         r, r_tangent, v = self._angle_to_linear([theta, omega])
-        self.linear_state = np.array([r, v])
+        self.linear_state = np.array([r + self.center, v])
 
     def run(self):
         while self.env.now < self.runtime:

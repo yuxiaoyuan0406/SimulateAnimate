@@ -11,14 +11,14 @@ from simu import module
 
 module.G = 1
 
-FPS = 60
+FPS = 30
 
 R = 0.5
 
 current_time = 0
 
 def simu_data_gen():
-    dt = 1 / FPS / 5
+    dt = 1 / FPS / 10
     runtime = 2e8
 
     env = simpy.Environment(0)

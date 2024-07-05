@@ -37,15 +37,26 @@ if __name__ == "__main__":
         pos_x, pos_y = pos.transpose()
         return Signal(pos_x, t=t, label=label)
 
-    x = []
-    for i in range(3):
-        init_angle = - 0.1 * i
-        x.append(simulation(mass=1, length=0.1, init_angle=init_angle, init_speed=0, label=f'init angle {init_angle}'))
+    # x = []
+    # for i in range(4):
+        # init_angle = - 0.5 * i
+        # x.append(simulation(mass=1, length=0.1, init_angle=init_angle, init_speed=0, label=f'init angle {init_angle}'))
     
-    ax_time, ax_power, ax_phase = None, None, None
-    for _ in x:
-        ax_time = _.plot_time_domain(ax=ax_time)
-        ax_power, ax_phase = _.plot_freq_domain(ax_power=ax_power, ax_phase=ax_phase)
-        print(f'{_.label} has a dominant frequency of {_.dominant_freq()}')
+    # ax_time, ax_power, ax_phase = None, None, None
+    # for _ in x:
+        # ax_time = _.plot_time_domain(ax=ax_time)
+        # ax_power, ax_phase = _.plot_freq_domain(ax_power=ax_power, ax_phase=ax_phase)
+        # print(f'{_.label} has a dominant frequency of {_.dominant_freq()}')
+    
+    init_angle = np.linspace(-np.pi/2 * 0.99, 0, 1000)
+    dominant_freq = []
+    for i in tqdm(init_angle):
+        dominant_freq.append(simulation(mass=1, length=0.1, init_angle=i, init_speed=0, label=f'init angle {i}').dominant_freq())
+    
+    plt.plot(np.degrees(init_angle), dominant_freq)
 
     plt.show()
+    
+    data = np.array([init_angle, dominant_freq])
+    data = data.transpose()
+    np.savetxt('init_angle_dominant_freq.txt', data)

@@ -15,6 +15,8 @@ FPS = 60
 
 R = 0.5
 
+current_time = 0
+
 def simu_data_gen():
     dt = 1 / FPS / 5
     runtime = 2e8
@@ -38,6 +40,8 @@ def simu_data_gen():
 
     while env.now < runtime:
         env.run(until=env.now + 1 / FPS)
+        global current_time
+        current_time = env.now
         yield s.state
 
 
@@ -48,6 +52,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots()
     color_list = ['r', 'g', 'b']
     anima_points = [ax.plot([], [], f'{c}o')[0] for c in color_list]
+    time_text = ax.text(0.02, 1.02, '', transform=ax.transAxes)
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
     ax.set_aspect('equal')
@@ -60,6 +65,7 @@ if __name__ == "__main__":
 
     def anima_update(data):
         global x_min, x_max, y_min, y_max
+        global current_time
         x = [x_min, x_max]
         y = [y_min, y_max]
 
@@ -74,6 +80,9 @@ if __name__ == "__main__":
 
         x_min, x_max = min(x), max(x)
         y_min, y_max = min(y), max(y)
+
+        time_text.set_text(f't={current_time:.3f}s')
+
         ax.set_xlim(x_min * 1.2, x_max * 1.2)
         ax.set_ylim(y_min * 1.2, y_max * 1.2)
         return anima_points

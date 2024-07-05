@@ -1,7 +1,7 @@
 import numpy as np
 import simpy
 
-g = 9.80665
+earth_gravity = 9.80665
 
 
 class Pendulum:
@@ -19,7 +19,7 @@ class Pendulum:
     ) -> None:
         self.env = env
         self.m = mass
-        self.g = np.array([0, -g])
+        self.g = np.array([0, -earth_gravity])
         self.l = length
         self.center = center
         self.r = np.array([np.cos(init_angle), np.sin(init_angle)]) * length

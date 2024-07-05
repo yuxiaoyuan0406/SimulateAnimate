@@ -89,3 +89,123 @@ class Pendulum:
             self.simulation_data['velocity'].append(self.linear_state[1])
             self.update()
             yield self.env.timeout(self.dt)
+
+G = 6.67430e-11
+
+class Planet:
+    __planet_default_name_counter__ = 0
+
+    def __init__(
+        self,
+        env: simpy.Environment,
+        mass: float,
+        initial_position = np.array([0,0], dtype=np.float64),
+        initial_velocity = np.array([0,0], dtype=np.float64),
+        runtime: float = 1,
+        dt: float = 1e-3,
+        name: str = '',
+    ) -> None:
+        self.env = env
+        self.mass = mass
+        self.state = np.array([initial_position, initial_velocity])
+        self.runtime = runtime
+        self.dt = dt
+
+        self.simulation_data = {
+            'time': [],
+            'position': [],
+            'velocity': [],
+        }
+        if name == '':
+            name = f'Planet{Planet.__planet_default_name_counter__}'
+            Planet.__planet_default_name_counter__ += 1
+        self.name = name
+
+    # def state_equation(self, state, t):
+        # pos, vel = state
+        # grav_acce = np.zeros(shape=self.state[1].shape, dtype=np.float64)
+
+    def update(self, state):
+        self.save_state()
+        self.state = state
+    
+    def save_state(self):
+        self.simulation_data['time'].append(self.env.now)
+        self.simulation_data['position'].append(self.state[0])
+        self.simulation_data['velocity'].append(self.state[1])
+
+def gravity(target: Planet, source: Planet):
+    r = target.state[0] - source.state[0]
+    return G * target.mass * source.mass / (np.linalg.norm(r) ** 3) * r
+
+class MultiPlanetSystem:
+    def __init__(
+        self,
+        env: simpy.Environment,
+        planets: list[Planet],
+        runtime: float = 1,
+        dt: float = 1e-3,
+    ) -> None:
+        self.env = env
+        assert len(planets) != 0, "Initializing a Multi-planet system with no planets."
+        self.planets = planets
+        self.runtime = runtime
+        self.dt = dt
+        self.state = []
+        for planet in planets:
+            self.state.append(planet.state)
+        self.state = np.array(self.state)
+        
+        self.history = []
+
+        self.env.process(self.run())
+
+    def state_equation(self, state, t):
+        # Assume state is a array of shape (len(self.planets), 2).
+        # For example, if 3 plantes are running in a plain surface,
+        # then the state shape should be (3,2).
+        # Each state in state list should countain a position and velocity.
+        # And the mass of each planet is given by self.planet
+        # velo = []
+        # acce = []
+        ret = []
+        mass = [planet.mass for planet in self.planets]
+        assert len(mass) == len(state), f"Input state({len(state)}) has a different dimention with planets({len(mass)})."
+        for i in range(len(state)):
+            s = state[i]
+            # velo.append(s[1])
+            a = 0
+            for j in range(len(mass)):
+                if i != j:
+                    target = state[j]
+                    r = target[0] - s[0]
+                    a += G * mass[j] / (np.linalg.norm(r) ** 3) * r
+            # acce.append(a)
+            ret.append(np.array([s[1], a], dtype=np.float64))
+        # ret = np.array([velo, acce], dtype=np.float64).transpose()
+        ret = np.array(ret)
+        return ret
+
+
+    def update(self):
+        t = self.env.now
+        current_state = self.state
+        k1 = self.state_equation(current_state, t)
+        k2 = self.state_equation(current_state + k1 * self.dt / 2,
+                                 t + self.dt / 2)
+        k3 = self.state_equation(current_state + k2 * self.dt / 2,
+                                 t + self.dt / 2)
+        k4 = self.state_equation(current_state + k3 * self.dt, t + self.dt)
+
+        k = (k1 + 2 * k2 + 2 * k3 + k4) / 6
+        state = current_state + k * self.dt
+        self.state = state
+        for i in range(len(self.planets)):
+            planet = self.planets[i]
+            planet.update(state[i])
+
+    def run(self):
+        while self.env.now < self.runtime:
+            self.history.append(self.state)
+            self.update()
+            yield self.env.timeout(self.dt)

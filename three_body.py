@@ -93,7 +93,9 @@ if __name__ == "__main__":
                         frames=simu_data_gen,
                         init_func=anima_init,
                         blit=False,
-                        interval=1000 / FPS)
+                        interval=1000 / FPS,
+                        save_count=int(20*FPS),
+                        )
 
     plt.show()
     

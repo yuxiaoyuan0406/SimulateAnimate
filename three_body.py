@@ -18,7 +18,8 @@ R = 0.5
 current_time = 0
 
 def simu_data_gen():
-    dt = 1 / FPS / 10
+    # dt = 1 / FPS / 15
+    dt = 1e-4
     runtime = 2e8
 
     env = simpy.Environment(0)

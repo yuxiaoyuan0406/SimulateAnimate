@@ -99,4 +99,4 @@ if __name__ == "__main__":
 
     plt.show()
     
-    # ani.save('three-body.mp4', writer='ffmpeg', fps=FPS)
+    # ani.save(f'data/three-body-r={R}.mp4', writer='ffmpeg', dpi=300, fps=FPS)

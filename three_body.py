@@ -11,7 +11,7 @@ from simu import module
 
 module.G = 1
 
-FPS = 30
+FPS = 60
 
 R = 0.5
 

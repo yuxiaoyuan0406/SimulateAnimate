@@ -1,6 +1,9 @@
+from turtle import color
 import numpy as np
 import simpy
 from tqdm import tqdm
+# import matplotlib
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from simu import Planet
@@ -13,7 +16,7 @@ module.G = 1
 
 FPS = 60
 
-R = 0.5
+R = 0.3
 
 current_time = 0
 
@@ -26,7 +29,7 @@ def simu_data_gen():
 
     planets = [
         Planet(env,
-               1,
+               np.random.uniform(0.9, 1.1),
                initial_position=R * np.array(
                    [np.cos(i * 2 * np.pi / 3),
                     np.sin(i * 2 * np.pi / 3)]),
@@ -51,9 +54,10 @@ x_max = y_max = R
 
 if __name__ == "__main__":
     fig, ax = plt.subplots()
-    color_list = ['r', 'g', 'b']
-    anima_points = [ax.plot([], [], f'{c}o')[0] for c in color_list]
+    color_list = ['red', 'green', 'blue']
+    anima_points = [ax.plot([], [], color=c, marker='o')[0] for c in color_list]
     time_text = ax.text(0.02, 1.02, '', transform=ax.transAxes)
+    # mass_text = [ax.text(0,0, f'm={}')]
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
     ax.set_aspect('equal')
@@ -98,5 +102,5 @@ if __name__ == "__main__":
                         )
 
     plt.show()
-    
+
     # ani.save(f'data/three-body-r={R}.mp4', writer='ffmpeg', dpi=300, fps=FPS)

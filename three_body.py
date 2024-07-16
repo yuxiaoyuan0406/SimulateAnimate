@@ -16,7 +16,7 @@ module.G = 1
 
 FPS = 60
 
-R = 0.3
+R = 0.5
 
 current_time = 0
 
@@ -27,15 +27,17 @@ def simu_data_gen():
 
     env = simpy.Environment(0)
 
+    init_pos = [R * np.array(
+        [np.cos(i * 2 * np.pi / 3),
+        np.sin(i * 2 * np.pi / 3)]) for i in range(3)]
+    init_vel = [np.array(
+        [-np.sin(i * 2 * np.pi / 3),
+        np.cos(i * 2 * np.pi / 3)]) + np.random.uniform(-1,1, size=(2,)) for i in range(3)]
     planets = [
         Planet(env,
                np.random.uniform(0.9, 1.1),
-               initial_position=R * np.array(
-                   [np.cos(i * 2 * np.pi / 3),
-                    np.sin(i * 2 * np.pi / 3)]),
-               initial_velocity=np.array(
-                   [-np.sin(i * 2 * np.pi / 3),
-                    np.cos(i * 2 * np.pi / 3)]),
+               initial_position=init_pos[i],
+               initial_velocity=init_vel[i],
                runtime=runtime,
                dt=dt) for i in range(3)
     ]
@@ -98,7 +100,7 @@ if __name__ == "__main__":
                         init_func=anima_init,
                         blit=False,
                         interval=1000 / FPS,
-                        save_count=int(20*FPS),
+                        save_count=int(60*FPS),
                         )
 
     plt.show()

@@ -20,6 +20,7 @@ R = 0.5
 
 current_time = 0
 
+
 def simu_data_gen():
     # dt = 1 / FPS / 15
     dt = 1e-4
@@ -27,16 +28,20 @@ def simu_data_gen():
 
     env = simpy.Environment(0)
 
-    init_pos = [R * np.array(
-        [np.cos(i * 2 * np.pi / 3),
-        np.sin(i * 2 * np.pi / 3)]) for i in range(3)]
-    init_vel = [np.array(
-        [-np.sin(i * 2 * np.pi / 3),
-        np.cos(i * 2 * np.pi / 3)]) + np.random.uniform(-1,1, size=(2,)) for i in range(3)]
+    init_pos = [
+        R * np.array([np.cos(i * 2 * np.pi / 3),
+                      np.sin(i * 2 * np.pi / 3)]) for i in range(3)
+    ]
+    init_vel = [
+        np.array([-np.sin(i * 2 * np.pi / 3),
+                  np.cos(i * 2 * np.pi / 3)]) * np.random.uniform(0.2, 2)
+        for i in range(3)
+    ]
+    mass_list = [1 / np.linalg.norm(init_vel[i]) for i in range(3)]
     planets = [
         Planet(env,
-               np.random.uniform(0.9, 1.1),
-               initial_position=init_pos[i],
+               mass_list[i],
+               initial_position=init_pos[i] * np.random.uniform(0.5, 1),
                initial_velocity=init_vel[i],
                runtime=runtime,
                dt=dt) for i in range(3)
@@ -57,7 +62,9 @@ x_max = y_max = R
 if __name__ == "__main__":
     fig, ax = plt.subplots()
     color_list = ['red', 'green', 'blue']
-    anima_points = [ax.plot([], [], color=c, marker='o')[0] for c in color_list]
+    anima_points = [
+        ax.plot([], [], color=c, marker='o')[0] for c in color_list
+    ]
     time_text = ax.text(0.02, 1.02, '', transform=ax.transAxes)
     # mass_text = [ax.text(0,0, f'm={}')]
     ax.set_xlim(x_min, x_max)
@@ -94,14 +101,15 @@ if __name__ == "__main__":
         ax.set_ylim(y_min * 1.2, y_max * 1.2)
         return anima_points
 
-    ani = FuncAnimation(fig,
-                        anima_update,
-                        frames=simu_data_gen,
-                        init_func=anima_init,
-                        blit=False,
-                        interval=1000 / FPS,
-                        save_count=int(60*FPS),
-                        )
+    ani = FuncAnimation(
+        fig,
+        anima_update,
+        frames=simu_data_gen,
+        init_func=anima_init,
+        blit=False,
+        interval=1000 / FPS,
+        save_count=int(60 * FPS),
+    )
 
     plt.show()
 

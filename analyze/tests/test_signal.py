@@ -1,8 +1,8 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from anal.signal import Signal, SquareWave
-from anal.signal import UnitStep
+from analyze.signal import Signal, SquareWave
+from analyze.signal import UnitStep
 
 matplotlib.use('TkAgg')
 

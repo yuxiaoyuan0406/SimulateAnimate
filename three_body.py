@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from simu import Planet
 from simu import MultiPlanetSystem
-from anal import *
+from analyze import *
 
 from simu import module
 
